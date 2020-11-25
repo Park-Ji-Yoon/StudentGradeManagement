@@ -82,7 +82,7 @@ void account::draw(int x)
 	
 void account::report() const
 {
-	cout<<acno<<setw(10)<<" "<<name<<setw(10)<<" "<<type<<setw(6)<<deposit<<endl;
+	cout<< acno<< setw(6) <<" "<<name<<setw(10)<<" "<<type<<setw(6)<<deposit<<endl;
 }
 
 	
