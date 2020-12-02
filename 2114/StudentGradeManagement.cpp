@@ -38,7 +38,7 @@ void changeTeacherPW(); // 선생님 비밀번호 바꿔주는 함수 - 할 지 안 할지 고민 후
 // 교사 비밀번호
 const string TEACHER_PASSWORD = "teacher";
 
-// gotoxy 함수
+// gotoxy 함수 (콘솔창 내에서 위치 지정 해줌)
 void gotoxy(int x, int y) {
 	COORD Pos;
 	Pos.X = x;
