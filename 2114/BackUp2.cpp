@@ -5,32 +5,48 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
+
 using namespace std;
 
 // 함수 정의
-void MainPage();
-void StudentPage();
-void TeacherPage();
+void MainPage(); // 메인 화면
+void StudentPage(); // 학생 메인 화면
+void TeacherPage(); // 교사 메인 화면
 //void WriteGrade();
-int ChoiceGrade();
+int ChoiceGrade(); // 학년 선택 화면
 //void ShowAllGrades();
 //void ShowGrade();
-void ObjectionSuccess();
-void GradeSuccess();
-void ShowObjections();
+
+void GradeSuccess(); // 성적 입력 완료 화면
+void ShowGrades(); // 성적 보는 화면
+
+void ShowObjections(); // 의의신청 보는 화면
+void ObjectionSuccess(); // 의의신청 완료 화면
+
 void IsTeacher(); // 교사 비밀번호 입력 화면
-void ShowGrades();
+
+void modityGrade(); // 학생 성적 수정
+
+string searchGrade(int isStudent); // 학생 성적 검색해주는 함수
+
+void showGrade(); // 학생 메뉴 => 학생 성적 보여주는 함수
+
+void showGradeT(); // 교사 메뉴 => 학생 성적 보여주는 함수
+
+void changeTeacherPW(); // 선생님 비밀번호 바꿔주는 함수 - 할 지 안 할지 고민 후 결정하기===================================================================================
 
 // 교사 비밀번호
 const string TEACHER_PASSWORD = "teacher";
 
-// gotoxy 함수
+// gotoxy 함수 (콘솔창 내에서 위치 지정 해줌)
 void gotoxy(int x, int y) {
 	COORD Pos;
 	Pos.X = x;
 	Pos.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
 }
+
+// 성적 클래스
 class Grade {
 public:
 	int student_num;
@@ -52,48 +68,556 @@ public:
 		this->score10 = score10;
 	}
 	boolean makeGrade();
-	Grade writeGrade();
+	Grade writeGrade(int flag);
+	//void modityGrade();
 };
+
+// writeGrade에서 입력받은 성적을 파일에 출력
 boolean Grade::makeGrade() {
 	int flag = ChoiceGrade();
 	if (flag == 1) {
-		Grade g = writeGrade();
+		Grade g = writeGrade(1);
 		ofstream fout("first_grade.txt", ios::app);
-		fout << g.student_num << setw(10) << g.student_name << setw(7) << g.score1 << setw(7) << g.score2 << setw(7) 
-			<< g.score3 << setw(7) << g.score4 << setw(7) << g.score7 << setw(7) << g.score6 << setw(7) << g.score7 
-			<< setw(7) << g.score8 << setw(7) << g.score9 << setw(7) << g.score10 << endl;
+		fout << g.student_num << setw(10) << g.student_name << setw(7) << g.score1 << setw(7) << g.score2 << setw(7)
+			<< g.score3 << setw(7) << g.score4 << setw(7) << g.score7 << setw(7) << g.score6 << setw(7) << g.score7
+			<< setw(7) << g.score8 << setw(7) << endl;
 		GradeSuccess();
 	}
 	else if (flag == 2) {
-		Grade g = writeGrade();
+		Grade g = writeGrade(2);
 		ofstream fout("second_grade.txt", ios::app);
-		fout << g.student_num << setw(10) << g.student_name << setw(5) << g.score1 << setw(5) << g.score2 << setw(5)
-			<< g.score3 << setw(5) << g.score4 << setw(5) << g.score5 << setw(5) << g.score6 << setw(5) << g.score7
-			<< setw(5) << g.score8 << setw(5) << g.score9 << setw(5) << g.score10 << endl;
+		fout << g.student_num << setw(10) << g.student_name << setw(7) << g.score1 << setw(7) << g.score2 << setw(7)
+			<< g.score3 << setw(7) << g.score4 << setw(7) << g.score5 << setw(7) << g.score6 << setw(8) << g.score7
+			<< setw(8) << g.score8 << setw(8) << g.score9 << setw(7) << endl;
 		GradeSuccess();
 	}
 	else {
-		Grade g = writeGrade();
+		Grade g = writeGrade(3);
 		ofstream fout("third_grade.txt", ios::app);
-		fout << g.student_num << setw(10) << g.student_name << setw(5) << g.score1 << setw(5) << g.score2 << setw(5)
-			<< g.score3 << setw(5) << g.score4 << setw(5) << g.score5 << setw(5) << g.score6 << setw(5) << g.score7
-			<< setw(5) << g.score8 << setw(5) << g.score9 << setw(5) << g.score10 << endl;
+		fout << g.student_num << setw(10) << g.student_name << setw(7) << g.score1 << setw(7) << g.score2 << setw(7)
+			<< g.score3 << setw(7) << g.score4 << setw(7) << g.score5 << setw(8) << g.score6 << setw(7) << g.score7
+			<< setw(7) << g.score8 << setw(7) << setw(7) << endl;
 		GradeSuccess();
 	}
 	return false;
 }
-Grade Grade::writeGrade() {
-	int student_num;
-	string student_name;
-	int score1 = 0; int score2 = 0; int score3 = 0; int score4 = 0; int score5 = 0;
-	int score6 = 0; int score7 = 0; int score8 = 0; int score9 = 0; int score10 = 0;
+
+// 성적 입력
+Grade Grade::writeGrade(int flag) {
+	if (flag == 1) {
+		int student_num;
+		string student_name;
+		int score1 = 0; int score2 = 0; int score3 = 0; int score4 = 0; int score5 = 0;
+		int score6 = 0; int score7 = 0; int score8 = 0; int score9 = 0; int score10 = 0;
+		system("cls");
+		int i, j;
+		int x = 9;
+		int y = 4;
+		char flag;
+
+		int studentMenuSelect = 0;
+
+		gotoxy(x, y);
+		printf("┌");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┐");
+		for (i = 0; i < 30; i++) {
+			y++;
+			gotoxy(x, y);
+			printf("│");
+			x += 99;
+			gotoxy(x, y);
+			printf("│");
+			x = 9;
+		}
+		gotoxy(x, y);
+		printf("└");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┘\n\n\n");
+		for (j = 0; j < 30; j++) {
+			if (j == 8) {
+				gotoxy(35, j);
+				cout << "학번을 입력해주세요 : ";
+				cin >> student_num;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 10) {
+				gotoxy(35, j);
+				cout << "이름을 입력해주세요 : ";
+				getline(cin, student_name, '\n'); // 띄워쓰기 해도 입력 가능
+			}
+			if (j == 12) {
+				gotoxy(35, j);
+				cout << "국어 : ";
+				cin >> score1;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 14) {
+				gotoxy(35, j);
+				cout << "수학 : ";
+				cin >> score2;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 16) {
+				gotoxy(35, j);
+				cout << "영어 : ";
+				cin >> score3;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 18) {
+				gotoxy(35, j);
+				cout << "사회 : ";
+				cin >> score4;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 20) {
+				gotoxy(35, j);
+				cout << "한국사 : ";
+				cin >> score5;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 22) {
+				gotoxy(35, j);
+				cout << "JAVA : ";
+				cin >> score6;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 24) {
+				gotoxy(35, j);
+				cout << "C언어 : ";
+				cin >> score7;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 26) {
+				gotoxy(35, j);
+				cout << "컴퓨터 구조 : ";
+				cin >> score8;
+				string remainder;
+				getline(cin, remainder);
+			}
+		}
+		Grade g(student_num, student_name, score1, score2, score3, score4, score5, score6, score7, score8, score9, score10);
+		return g;
+	}
+	else if (flag == 2) {
+		int student_num;
+		string student_name;
+		int score1 = 0; int score2 = 0; int score3 = 0; int score4 = 0; int score5 = 0;
+		int score6 = 0; int score7 = 0; int score8 = 0; int score9 = 0; int score10 = 0;
+		system("cls");
+		int i, j;
+		int x = 9;
+		int y = 4;
+		char flag;
+
+		int studentMenuSelect = 0;
+
+		gotoxy(x, y);
+		printf("┌");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┐");
+		for (i = 0; i < 30; i++) {
+			y++;
+			gotoxy(x, y);
+			printf("│");
+			x += 99;
+			gotoxy(x, y);
+			printf("│");
+			x = 9;
+		}
+		gotoxy(x, y);
+		printf("└");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┘\n\n\n");
+		for (j = 0; j < 30; j++) {
+			if (j == 8) {
+				gotoxy(35, j);
+				cout << "학번을 입력해주세요 : ";
+				cin >> student_num;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 10) {
+				gotoxy(35, j);
+				cout << "이름을 입력해주세요 : ";
+				getline(cin, student_name, '\n'); // 띄워쓰기 해도 입력 가능
+			}
+			if (j == 12) {
+				gotoxy(35, j);
+				cout << "국어 : ";
+				cin >> score1;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 14) {
+				gotoxy(35, j);
+				cout << "수학 : ";
+				cin >> score2;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 16) {
+				gotoxy(35, j);
+				cout << "영어 : ";
+				cin >> score3;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 18) {
+				gotoxy(35, j);
+				cout << "과학 : ";
+				cin >> score4;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 20) {
+				gotoxy(35, j);
+				cout << "JSP : ";
+				cin >> score5;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 22) {
+				gotoxy(35, j);
+				cout << "JAVA : ";
+				cin >> score6;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 24) {
+				gotoxy(35, j);
+				cout << "C++ : ";
+				cin >> score7;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 26) {
+				gotoxy(35, j);
+				cout << "Python : ";
+				cin >> score8;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 28) {
+				gotoxy(35, j);
+				cout << "자료 구조 : ";
+				cin >> score9;
+				string remainder;
+				getline(cin, remainder);
+			}
+		}
+		Grade g(student_num, student_name, score1, score2, score3, score4, score5, score6, score7, score8, score9, score10);
+		return g;
+	}
+	else {
+		int student_num;
+		string student_name;
+		int score1 = 0; int score2 = 0; int score3 = 0; int score4 = 0; int score5 = 0;
+		int score6 = 0; int score7 = 0; int score8 = 0; int score9 = 0; int score10 = 0;
+		system("cls");
+		int i, j;
+		int x = 9;
+		int y = 4;
+		char flag;
+
+		int studentMenuSelect = 0;
+
+		gotoxy(x, y);
+		printf("┌");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┐");
+		for (i = 0; i < 30; i++) {
+			y++;
+			gotoxy(x, y);
+			printf("│");
+			x += 99;
+			gotoxy(x, y);
+			printf("│");
+			x = 9;
+		}
+		gotoxy(x, y);
+		printf("└");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┘\n\n\n");
+		for (j = 0; j < 30; j++) {
+			if (j == 8) {
+				gotoxy(35, j);
+				cout << "학번을 입력해주세요 : ";
+				cin >> student_num;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 10) {
+				gotoxy(35, j);
+				cout << "이름을 입력해주세요 : ";
+				getline(cin, student_name, '\n'); // 띄워쓰기 해도 입력 가능
+			}
+			if (j == 12) {
+				gotoxy(35, j);
+				cout << "선택1 : ";
+				cin >> score1;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 14) {
+				gotoxy(35, j);
+				cout << "선택2 : ";
+				cin >> score2;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 16) {
+				gotoxy(35, j);
+				cout << "선택3 : ";
+				cin >> score3;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 18) {
+				gotoxy(35, j);
+				cout << "영어 : ";
+				cin >> score4;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 20) {
+				gotoxy(35, j);
+				cout << "사무관리 : ";
+				cin >> score5;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 22) {
+				gotoxy(35, j);
+				cout << "DB : ";
+				cin >> score6;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 24) {
+				gotoxy(35, j);
+				cout << "server : ";
+				cin >> score7;
+				string remainder;
+				getline(cin, remainder);
+			}
+			if (j == 26) {
+				gotoxy(35, j);
+				cout << "Programming : ";
+				cin >> score8;
+				string remainder;
+				getline(cin, remainder);
+			}
+		}
+		Grade g(student_num, student_name, score1, score2, score3, score4, score5, score6, score7, score8, score9, score10);
+		return g;
+	}
+}
+
+// 성적 수정
+void modityGrade() {
+	int hakbun;
+	string hakbun2;
+	string line;
+	int offset;
+
+	// 학번 입력받기
+	int flag = ChoiceGrade();
+
+	// 해당 학번이 있는 줄에 엑세스하기
+	if (flag == 1) {
+		ifstream first_grade("first_grade.txt");
+		cout << "자신의 학번을 입력하세요 : ";
+		cin >> hakbun;
+		hakbun2 = to_string(hakbun);
+
+		while (!first_grade.eof()) {
+			getline(first_grade, line);
+			if ((offset = line.find(hakbun2, 0)) != string::npos) {
+				cout << line << endl;
+			}
+		}
+		first_grade.close();
+	}
+
+	// 무슨과목 바꿀 건지 물어보기
+	// 점수 입력하기
+	// 수정 완료
+	FILE* p_file = NULL;
+	char temp[256], * p;
+	int find_pos;
+
+	if (0 == fopen_s(&p_file, "first_grade.txt", "r+t")) {
+		while (fgets(temp, 256, p_file) != NULL) {
+			p = strstr(temp, "박지윤");
+			if (p != NULL) {
+				find_pos = strlen(temp) - (p - temp) + 1;
+				fseek(p_file, (-1) * find_pos, SEEK_CUR);
+				fwrite("일지윤", 4, 1, p_file);
+				fseek(p_file, find_pos - 4, SEEK_CUR);
+			}
+		}
+		fclose(p_file);
+		//fout.seekp(-1, ios::end);
+	}
+}
+
+// 학생 => 성적 보기
+string searchGrade(int isStudent) {
+	int flag = ChoiceGrade();
+	string line;
+	int hakbun;
+	int offset;
+	string hakbun2;
+
+	int i, j;
+	int x = 9;
+	int y = 4;
+
+	int where;
+
+	boolean visible = false;
+
 	system("cls");
+	gotoxy(x, y);
+	printf("┌");
+	for (i = 0; i < 98; i++) {
+		printf("─");
+	}
+	printf("┐");
+	for (i = 0; i < 30; i++) {
+		y++;
+		gotoxy(x, y);
+		printf("│");
+		x += 99;
+		gotoxy(x, y);
+		printf("│");
+		x = 9;
+	}
+	gotoxy(x, y);
+	printf("└");
+	for (i = 0; i < 98; i++) {
+		printf("─");
+	}
+	printf("┘\n\n\n");
+	for (i = 0; i < 30; i++) {
+		if (i == 13) {
+			if (flag == 1) {
+				ifstream first_grade("first_grade.txt");
+				if (isStudent == 1) {
+					gotoxy(45, i);
+					cout << "자신의 학번을 입력하세요 : ";
+				}
+				else {
+					gotoxy(40, i);
+					cout << "검색을 원하는 학생의 학번을 입력하세요 : ";
+				}
+				cin >> hakbun;
+				hakbun2 = to_string(hakbun);
+
+				while (!first_grade.eof()) {
+					getline(first_grade, line);
+					if ((offset = line.find(hakbun2, 0)) != string::npos) {
+						gotoxy(20, i + 3);
+						cout << "학번     이름      국어   수학   영어   사회   국사   JAVA   C     컴퓨터 구조" << endl;
+						gotoxy(20, i + 4);
+						cout << line << endl;
+						visible = true;
+					}
+				}
+				if (visible == false) {
+					gotoxy(40, i + 3);
+					cout << "해당 학번에 입력된 성적이 없습니다" << endl;
+				}
+				first_grade.close();
+				visible = false;
+				return line;
+			}
+			else if (flag == 2) {
+				gotoxy(45, i);
+				ifstream second_grade("second_grade.txt");
+				cout << "자신의 학번을 입력하세요 : ";
+				cin >> hakbun;
+				hakbun2 = to_string(hakbun);
+
+				while (!second_grade.eof()) {
+					getline(second_grade, line);
+					if ((offset = line.find(hakbun2, 0)) != string::npos) {
+						gotoxy(18, i + 3);
+						cout << "학번     이름      국어   수학   영어   과학   JSP   JAVA     C++     Python  DS  " << endl;
+						gotoxy(18, i + 4);
+						cout << line << endl;
+						visible = true;
+					}
+				}
+				if (visible == false) {
+					gotoxy(40, i + 3);
+					cout << "해당 학번에 입력된 성적이 없습니다" << endl;
+				}
+				second_grade.close();
+				visible = false;
+				return line;
+			}
+			else {
+				gotoxy(45, i);
+				ifstream third_grade("third_grade.txt");
+				cout << "자신의 학번을 입력하세요 : ";
+				cin >> hakbun;
+				hakbun2 = to_string(hakbun);
+
+				while (!third_grade.eof()) {
+					getline(third_grade, line);
+					if ((offset = line.find(hakbun2, 0)) != string::npos) {
+						gotoxy(20, i + 3);
+						cout << "학번     이름     선택1  선택2  선택3  영어  사무관리  DB  server   Programming" << endl;
+						gotoxy(20, i + 4);
+						cout << line << endl;
+						visible = true;
+					}
+				}
+				if (visible == false) {
+					gotoxy(40, i + 3);
+					cout << "해당 학번에 입력된 성적이 없습니다" << endl;
+				}
+				third_grade.close();
+				visible = false;
+				return line;
+			}
+		}
+	}
+}
+
+void showGrade() {
+	string line = searchGrade(1);
+
 	int i, j;
 	int x = 9;
 	int y = 4;
 	char flag;
 
 	int studentMenuSelect = 0;
+
+	int where;
 
 	gotoxy(x, y);
 	printf("┌");
@@ -116,79 +640,110 @@ Grade Grade::writeGrade() {
 		printf("─");
 	}
 	printf("┘\n\n\n");
+
+	boolean success = true;
+
 	for (j = 0; j < 30; j++) {
-		if (j == 8) {
-			gotoxy(35, j);
-			cout << "학번을 입력해주세요 : ";
-			cin >> student_num;
-			string remainder;
-			getline(cin, remainder);
-		}
-		if (j == 10) {
-			gotoxy(35, j);
-			cout << "이름을 입력해주세요 : ";
-			getline(cin, student_name, '\n'); // 띄워쓰기 해도 입력 가능
-		}
-		if (j == 12) {
-			gotoxy(35, j);
-			cout << "국어 : ";
-			cin >> score1;
-			string remainder;
-			getline(cin, remainder);
-		}
-		if (j == 14) {
-			gotoxy(35, j);
-			cout << "수학 : ";
-			cin >> score2;
-			string remainder;
-			getline(cin, remainder);
-		}
 		if (j == 16) {
-			gotoxy(35, j);
-			cout << "영어 : ";
-			cin >> score3;
-			string remainder;
-			getline(cin, remainder);
-		}
-		if (j == 18) {
-			gotoxy(35, j);
-			cout << "사회 : ";
-			cin >> score4;
-			string remainder;
-			getline(cin, remainder);
-		}
-		if (j == 20) {
-			gotoxy(35, j);
-			cout << "한국사 : ";
-			cin >> score5;
-			string remainder;
-			getline(cin, remainder);
-		}
-		if (j == 22) {
-			gotoxy(35, j);
-			cout << "JAVA : ";
-			cin >> score6;
-			string remainder;
-			getline(cin, remainder);
-		}
-		if (j == 24) {
-			gotoxy(35, j);
-			cout << "C언어 : ";
-			cin >> score7;
-			string remainder;
-			getline(cin, remainder);
-		}
-		if (j == 26) {
-			gotoxy(35, j);
-			cout << "컴퓨터 구조 : ";
-			cin >> score8;
-			string remainder;
-			getline(cin, remainder);
+			gotoxy(35, j + 5);
+			cout << "(0 : 메인화면, 1 : 학생화면, 2 : 다시 검색) : ";
+			cin >> where;
 		}
 	}
-	Grade g(student_num, student_name, score1, score2, score3, score4, score5, score6, score7, score8, score9, score10);
-	return g;
+	if (where == 0) {
+		system("cls");
+		MainPage();
+	}
+	else if (where == 1) {
+		system("cls");
+		StudentPage();
+	}
+	else if (where == 2) {
+		system("cls");
+		showGrade();
+	}
+	else {
+		for (j = 0; j < 30; j++) {
+			if (j == 16) {
+				gotoxy(35, j + 5);
+				cout << "존재하지 않는 메뉴입니다";
+				gotoxy(35, j + 3);
+				cout << "(0 : 메인화면, 1 : 학생화면, 2 : 다시 검색) : ";
+				cin >> where;
+			}
+		}
+	}
 }
+
+void showGradeT() {
+	string line = searchGrade(0);
+
+	int i, j;
+	int x = 9;
+	int y = 4;
+	char flag;
+
+	int studentMenuSelect = 0;
+
+	int where;
+
+	gotoxy(x, y);
+	printf("┌");
+	for (i = 0; i < 98; i++) {
+		printf("─");
+	}
+	printf("┐");
+	for (i = 0; i < 30; i++) {
+		y++;
+		gotoxy(x, y);
+		printf("│");
+		x += 99;
+		gotoxy(x, y);
+		printf("│");
+		x = 9;
+	}
+	gotoxy(x, y);
+	printf("└");
+	for (i = 0; i < 98; i++) {
+		printf("─");
+	}
+	printf("┘\n\n\n");
+
+	boolean success = true;
+
+	for (j = 0; j < 30; j++) {
+		if (j == 16) {
+			gotoxy(35, j + 5);
+			cout << "(0 : 메인화면, 1 : 교사화면, 2 : 다시 검색) : ";
+			cin >> where;
+		}
+	}
+	if (where == 0) {
+		system("cls");
+		MainPage();
+	}
+	else if (where == 1) {
+		system("cls");
+		TeacherPage();
+	}
+	else if (where == 2) {
+		system("cls");
+		showGradeT();
+	}
+	else {
+		for (j = 0; j < 30; j++) {
+			if (j == 16) {
+				gotoxy(35, j + 5);
+				cout << "존재하지 않는 메뉴입니다";
+				gotoxy(35, j + 3);
+				cout << "(0 : 메인화면, 1 : 교사화면, 2 : 다시 검색) : ";
+				cin >> where;
+			}
+		}
+	}
+}
+
+// 성적 입력 완료 화면
 void GradeSuccess() {
 	system("cls");
 	int i, j;
@@ -252,7 +807,9 @@ void GradeSuccess() {
 			}
 		}
 	}
-}
+} // end of GradeSuccess
+
+// 의의신청 클래스
 class Objection {
 public:
 	int student_num;
@@ -265,7 +822,8 @@ public:
 	}
 	boolean makeObjection();
 	Objection writeObjection();
-};
+}; // end of Objection (class)
+
 boolean Objection::makeObjection() {
 	int flag = ChoiceGrade();
 	if (flag == 1) {
@@ -287,7 +845,9 @@ boolean Objection::makeObjection() {
 		ObjectionSuccess();
 	}
 	return false;
-}
+} // end of Objection::makeObjection
+
+// 의의신청 화면
 Objection Objection::writeObjection() {
 	int student_num;
 	string subject;
@@ -343,7 +903,9 @@ Objection Objection::writeObjection() {
 	}
 	Objection ob(student_num, subject, reason);
 	return ob;
-}
+} // end of Objection::writeObjection
+
+// 의의신청 완료 화면
 void ObjectionSuccess() {
 	system("cls");
 	int i, j;
@@ -405,9 +967,9 @@ void ObjectionSuccess() {
 			}
 		}
 	}
-}
+} // end of ObjectionSuccess
 
-
+// 선생님인지 확인하는 창 (비밀번호 사용)
 void IsTeacher() {
 	system("cls");
 	int i;
@@ -462,7 +1024,7 @@ void IsTeacher() {
 					cout << "교사 비밀번호를 입력해주세요 : ";
 					cin >> teacherPw;
 					gotoxy(47, k + 5);
-					cout << "(뒤로가려면 0입력)" << endl;
+					cout << "(뒤로가려면 0 입력)" << endl;
 					if (teacherPw == TEACHER_PASSWORD) {
 						TeacherPage();
 						break;
@@ -475,7 +1037,8 @@ void IsTeacher() {
 			}
 		}
 	}
-}
+} // end of IsTeacher
+
 // 학생 메인 페이지 함수
 void StudentPage() {
 	system("cls");
@@ -532,6 +1095,7 @@ void StudentPage() {
 	while (true) {
 		switch (studentMenuSelect) {
 			//case 1:ShowGrade(); break;
+		case 1: showGrade(); break;
 		case 2: {
 			Objection ob(0, "", "");
 			ob.makeObjection();
@@ -617,7 +1181,7 @@ void TeacherPage() {
 	scanf_s("%d", &teacherMenuSelect);
 	switch (teacherMenuSelect) {
 	case 1:ShowGrades();  break;
-	case 2:break;
+	case 2:showGradeT();
 	case 3: {
 		int score1 = 0; int score2 = 0; int score3 = 0; int score4 = 0; int score5 = 0;
 		int score6 = 0; int score7 = 0; int score8 = 0; int score9 = 0; int score10 = 0;
@@ -625,7 +1189,7 @@ void TeacherPage() {
 		g.makeGrade();
 		break;
 	}
-	case 4:break;
+	case 4:modityGrade();  break;
 	case 5: ShowObjections();  break;
 	case 6: MainPage(); break;
 	default:
@@ -1002,6 +1566,7 @@ int ChoiceGrade() {
 //
 //	}
 //}
+
 // 교사 -> 의의신청 목록 보기
 void ShowObjections() {
 	int flag = ChoiceGrade();
@@ -1063,7 +1628,8 @@ void ShowObjections() {
 	else {
 
 	}
-}
+} // end of ShowObjections
+
 void ShowGrades() {
 	int flag = ChoiceGrade();
 	int student_num;
@@ -1116,16 +1682,108 @@ void ShowGrades() {
 		//	cout << student_num << setw(20) << student_name << setw(30) << scores[0]  << setw(10) <<  scores[1] << setw(10) << scores[2] << setw(10) << scores[3] << setw(10) << scores[4] << setw(10) << scores[5] << setw(10) << scores[6] << setw(10) << scores[7] << setw(10) << scores[8] << setw(10) << scores[9] << endl;
 		//	count++;
 		//}
+		//while (fin >> student_num >> student_name >> scores[0] >> scores[1] >> scores[2] >> scores[3] >> scores[4] >> scores[5] >> scores[6] >> scores[7] >> scores[8] >> scores[9]) {
+		//	gotoxy(15, count);
+		//	/*printf("%8d%10s", student_num, subject);
+		//	cout << reason << endl;*/
+		//	cout << student_num << setw(20) << student_name << setw(30) << scores[0]  << setw(10) <<  scores[1] << setw(10) << scores[2] << setw(10) << scores[3] << setw(10) << scores[4] << setw(10) << scores[5] << setw(10) << scores[6] << setw(10) << scores[7] << setw(10) << scores[8] << setw(10) << scores[9] << endl;
+		//	count++;
+		//}
+		//while (fin >> student_num >> student_name >> scores[0] >> scores[1] >> scores[2] >> scores[3] >> scores[4] >> scores[5] >> scores[6] >> scores[7] >> scores[8] >> scores[9]) {
+		//	gotoxy(15, count);
+		//	/*printf("%8d%10s", student_num, subject);
+		//	cout << reason << endl;*/
+		//	cout << student_num << setw(20) << student_name << setw(30) << scores[0]  << setw(10) <<  scores[1] << setw(10) << scores[2] << setw(10) << scores[3] << setw(10) << scores[4] << setw(10) << scores[5] << setw(10) << scores[6] << setw(10) << scores[7] << setw(10) << scores[8] << setw(10) << scores[9] << endl;
+		//	count++;
+		//}
 		fin.close();
 	}
 	else if (flag == 2) {
+		system("cls");
+		int i;
+		int x = 9;
+		int y = 4;
 
+		gotoxy(x, y);
+		printf("┌");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┐");
+		for (i = 0; i < 30; i++) {
+			y++;
+			gotoxy(x, y);
+			printf("│");
+			x += 99;
+			gotoxy(x, y);
+			printf("│");
+			x = 9;
+		}
+		gotoxy(x, y);
+		printf("└");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┘\n\n\n");
+
+		int count = 5;
+		ifstream fin;
+		fin.open("second_grade.txt");
+
+		char inputString[1000];
+		while (!fin.eof()) {
+			count++;
+			fin.getline(inputString, 100);
+			gotoxy(20, count);
+			cout << inputString << endl;
+		}
+		fin.close();
 	}
 	else {
+		system("cls");
+		int i;
+		int x = 9;
+		int y = 4;
 
+		gotoxy(x, y);
+		printf("┌");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┐");
+		for (i = 0; i < 30; i++) {
+			y++;
+			gotoxy(x, y);
+			printf("│");
+			x += 99;
+			gotoxy(x, y);
+			printf("│");
+			x = 9;
+		}
+		gotoxy(x, y);
+		printf("└");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┘\n\n\n");
+
+		int count = 5;
+		ifstream fin;
+		fin.open("third_grade.txt");
+
+		char inputString[1000];
+		while (!fin.eof()) {
+			count++;
+			fin.getline(inputString, 100);
+			gotoxy(20, count);
+			cout << inputString << endl;
+		}
+		fin.close();
 	}
-}
+} // end of ShowGrades
+
+// 메인함수
 int main() {
 	MainPage();
 	return 0;
-}
+} // end of main

@@ -12,7 +12,10 @@ using namespace std;
 void MainPage(); // 메인 화면
 void StudentPage(); // 학생 메인 화면
 void TeacherPage(); // 교사 메인 화면
+//void WriteGrade();
 int ChoiceGrade(); // 학년 선택 화면
+//void ShowAllGrades();
+//void ShowGrade();
 
 void GradeSuccess(); // 성적 입력 완료 화면
 void ShowGrades(); // 성적 보는 화면
@@ -78,8 +81,8 @@ boolean Grade::makeGrade() {
 	if (flag == 1) {
 		Grade g = writeGrade(1);
 		ofstream fout("first_grade.txt", ios::app);
-		fout << g.student_num << setw(10) << g.student_name << setw(7) << g.score1 << setw(7) << g.score2 << setw(7) 
-			<< g.score3 << setw(7) << g.score4 << setw(7) << g.score7 << setw(7) << g.score6 << setw(7) << g.score7 
+		fout << g.student_num << setw(10) << g.student_name << setw(7) << g.score1 << setw(7) << g.score2 << setw(7)
+			<< g.score3 << setw(7) << g.score4 << setw(7) << g.score7 << setw(7) << g.score6 << setw(7) << g.score7
 			<< setw(7) << g.score8 << setw(7) << endl;
 		GradeSuccess();
 	}
@@ -210,7 +213,8 @@ Grade Grade::writeGrade(int flag) {
 		}
 		Grade g(student_num, student_name, score1, score2, score3, score4, score5, score6, score7, score8, score9, score10);
 		return g;
-	}else if (flag == 2) {
+	}
+	else if (flag == 2) {
 		int student_num;
 		string student_name;
 		int score1 = 0; int score2 = 0; int score3 = 0; int score4 = 0; int score5 = 0;
@@ -323,7 +327,8 @@ Grade Grade::writeGrade(int flag) {
 		}
 		Grade g(student_num, student_name, score1, score2, score3, score4, score5, score6, score7, score8, score9, score10);
 		return g;
-	}else {
+	}
+	else {
 		int student_num;
 		string student_name;
 		int score1 = 0; int score2 = 0; int score3 = 0; int score4 = 0; int score5 = 0;
@@ -462,518 +467,91 @@ void modifyGrade() {
 	string line;
 	int offset;
 
-	string subject;
-	string new_score;
-
 	// 학번 입력받기
 	int flag = ChoiceGrade();
 
 	// 해당 학번이 있는 줄에 엑세스하기
 	if (flag == 1) {
-		system("cls");
-		int i;
-		int x = 9;
-		int y = 4;
+		ifstream first_grade("first_grade.txt");
+		cout << "자신의 학번을 입력하세요 : ";
+		cin >> hakbun;
+		hakbun2 = to_string(hakbun);
 
-		gotoxy(x, y);
-		printf("┌");
-		for (i = 0; i < 98; i++) {
-			printf("─");
-		}
-		printf("┐");
+		/*char student_name[20];
+		char student_num[10];
+		char score1[10]; char score2[10]; char score3[10]; char score4[10]; char score5[10];
+		char score6[10]; char score7[10]; char score8[10];*/
 
-		for (i = 0; i < 30; i++) {
-			y++;
-			gotoxy(x, y);
-			printf("│");
+		string student_name;
+		string student_num;
+		string score1; string score2; string score3; string score4; string score5;
+		string score6; string score7; string score8;
 
-			x += 99;
-			gotoxy(x, y);
-			printf("│");
-			x = 9;
-		}
-		gotoxy(x, y);
-		printf("└");
-		for (i = 0; i < 98; i++) {
-			printf("─");
-		}
-		printf("┘\n\n\n");
-
-		for (int k = 0; k < 30; k++) {
-			if (k == 11) {
-				gotoxy(40, k);
-				ifstream first_grade("first_grade.txt");
-				cout << "자신의 학번을 입력하세요 : ";
-				cin >> hakbun;
-				hakbun2 = to_string(hakbun);
-
-				string student_name;
-				string student_num;
-				string score1; string score2; string score3; string score4; string score5;
-				string score6; string score7; string score8;
-
-				ModifyGrade mg("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0");
-
-				while (first_grade >> student_num >> student_name >> score1 >> score2 >> score3 >> score4 >> score5 >> score6 >> score7 >> score8) {
-					mg.student_num = student_num;
-					mg.student_name = student_name;
-					mg.score1 = score1;
-					mg.score2 = score2;
-					mg.score3 = score3;
-					mg.score4 = score4;
-					mg.score5 = score5;
-					mg.score6 = score6;
-					mg.score7 = score7;
-					mg.score8 = score8;
-					if (mg.student_num == hakbun2) {
-						gotoxy(25, k + 3);
-						cout << "학번    이름     국어   수학   영어   사회   국사   JAVA   C   컴퓨터구조" << endl;
-						gotoxy(25, k + 4);
-						cout << mg.student_num << setw(10) << student_name <<
-							setw(5) << score1 << setw(7) << score2 << setw(7) << score3 << setw(7) << score4 << setw(7)
-							<< score5 << setw(7) << score6 << setw(7) << score7 << setw(7) << score8 << '\n';
-						break;
-					}
-				}
-				first_grade.close();
-
-				// 무슨과목 바꿀 건지 물어보기
-				gotoxy(40, k + 7);
-				cout << "성적을 수정할 과목을 입력하세요 : ";
-				cin >> subject;
-				gotoxy(40, k + 9);
-				cout << "수정된 성적을 입력하세요 : ";
-				cin >> new_score;
-				if (subject == "국어") {
-					mg.score1 = new_score;
-				}
-				else if (subject == "수학") {
-					mg.score2 = new_score;
-				}
-				else if (subject == "영어") {
-					mg.score3 = new_score;
-				}
-				else if (subject == "사회") {
-					mg.score4 = new_score;
-				}
-				else if (subject == "국사") {
-					mg.score5 = new_score;
-				}
-				else if (subject == "자바") {
-					mg.score6 = new_score;
-				}
-				else if (subject == "C") {
-					mg.score7 = new_score;
-				}
-				else if (subject == "컴퓨터구조") {
-					mg.score8 = new_score;
-				}
-				else {
-					subject = "";
-					new_score = "";
-					gotoxy(40, k + 7);
-					cout << "성적을 수정할 과목을 입력하세요 : ";
-					cin >> subject;
-					gotoxy(40, k + 9);
-					cout << "수정된 성적을 입력하세요 : ";
-					cin >> new_score;
-				}
-
-				// 이전 점수 삭제
-				FILE* fd, * fd1;
-				char name[80];
-				char line[80];
-				string name2;
-				char temp[2048];
-
-				fd = fopen("first_grade.txt", "rb");
-				const char* c = hakbun2.c_str();
-				strcpy(name, c);
-				fflush(stdin);
-
-				temp[0] = 0;
-				while (!feof(fd)) {
-					memset(&line[0], 0, sizeof(0));
-					fgets(line, 80, fd);
-					if (strstr(line, name) == NULL) {
-						strcat(temp, line);
-					}
-				}
-				fclose(fd);
-
-				fd = fopen("first_grade.txt", "wb");
-				fprintf(fd, "%s", temp);
-				fclose(fd);
-
-				// 수정된 성적 입력
-				ofstream fout("first_grade.txt", ios::app);
-				fout << mg.student_num << setw(10) << mg.student_name << setw(7) << mg.score1 << setw(7) << mg.score2 << setw(7)
-					<< mg.score3 << setw(7) << mg.score4 << setw(7) << mg.score7 << setw(7) << mg.score6 << setw(7) << mg.score7
-					<< setw(7) << mg.score8 << setw(7) << endl;
+		//while (!first_grade.eof()) {
+		//	getline(first_grade, line);
+		//	if ((offset = line.find(hakbun2, 0)) != string::npos) {
+		//		//cout << line << endl;
+		//		//cout << "수정할 과목명을 입력해주세요 : ";
+		//	}
+		//}
+		while (first_grade >> student_num >> student_name >> score1 >> score2 >> score3 >> score4 >> score5 >> score6 >> score7 >> score8) {
+			cout << student_name << setw(10) << student_num <<
+				setw(5) << score1 << setw(5) << score2 << setw(5) << score3 << setw(5) << score4 << setw(5)
+				<< score5 << setw(5) << score6 << setw(5) << score7 << setw(5) << score8 << '\n';
+			ModifyGrade mg(student_num, student_name, score1, score2, score3, score4, score5, score6, score7, score8, "0", "0");
+			if (mg.student_num == hakbun2) {
+				cout << mg.student_num << setw(5) << student_name << endl;
+				break;
 			}
 		}
 
-		gotoxy(45, 23);
-		cout << "성적이 수정되었습니다" << endl;
+		first_grade.close();
 
-		gotoxy(23, 26);
-		int select = -1;
-		cout << "(0 입력 : 메인화면, 1 입력 : 교사메뉴, 2 입력 : 성적 수정하기) : ";
-		cin >> select;
-		while (true) {
-			switch (select) {
-				//case 1:ShowGrade(); break;
-			case 0: MainPage(); break;
-			case 1: TeacherPage(); break;
-			case 2: modifyGrade(); break;
-			default:
-				gotoxy(47, 27);
-				printf("존재하지 않는 메뉴입니다");
-				gotoxy(15, 26);
-				printf("(0 입력 : 메인화면, 1 입력 : 교사메뉴, 2 입력 : 성적 수정하기) : ");
-				scanf_s("%d", &select);
+		// 표시
+		FILE* fd, * fd1;
+		char name[80];
+		char line[80];
+		char temp[2048];
+
+		fd = fopen("first_grade.txt", "rb");
+		scanf("%s", &name);
+		fflush(stdin);
+
+		temp[0] = 0;
+		while (!feof(fd)) {
+			memset(&line[0], 0, sizeof(0));
+			fgets(line, 80, fd);
+			if (strstr(line, name) == NULL) {
+				strcat(temp, line);
 			}
 		}
+		fclose(fd);
+
+		fd = fopen("first_grade.txt", "wb");
+		fprintf(fd, "%s", temp);
+		fclose(fd);
 	}
-	else if (flag == 2) {
-		system("cls");
-		int i;
-		int x = 9;
-		int y = 4;
 
-		gotoxy(x, y);
-		printf("┌");
-		for (i = 0; i < 98; i++) {
-			printf("─");
-		}
-		printf("┐");
+	// 무슨과목 바꿀 건지 물어보기
+	// 점수 입력하기
+	// 수정 완료
+	//FILE* p_file = NULL;
+	//char temp[256], * p;
+	//int find_pos;
 
-		for (i = 0; i < 30; i++) {
-			y++;
-			gotoxy(x, y);
-			printf("│");
-
-			x += 99;
-			gotoxy(x, y);
-			printf("│");
-			x = 9;
-		}
-		gotoxy(x, y);
-		printf("└");
-		for (i = 0; i < 98; i++) {
-			printf("─");
-		}
-		printf("┘\n\n\n");
-
-		for (int k = 0; k < 30; k++) {
-			if (k == 11) {
-				gotoxy(40, k);
-				ifstream second_grade("second_grade.txt");
-				cout << "자신의 학번을 입력하세요 : ";
-				cin >> hakbun;
-				hakbun2 = to_string(hakbun);
-
-				string student_name;
-				string student_num;
-				string score1; string score2; string score3; string score4; string score5;
-				string score6; string score7; string score8; string score9;
-
-				ModifyGrade mg("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0");
-
-				while (second_grade >> student_num >> student_name >> score1 >> score2 >> score3 >> score4 >> score5 >> score6 >> score7 >> score8 >> score9) {
-					mg.student_num = student_num;
-					mg.student_name = student_name;
-					mg.score1 = score1;
-					mg.score2 = score2;
-					mg.score3 = score3;
-					mg.score4 = score4;
-					mg.score5 = score5;
-					mg.score6 = score6;
-					mg.score7 = score7;
-					mg.score8 = score8;
-					mg.score9 = score9;
-					if (mg.student_num == hakbun2) {
-						gotoxy(23, k + 3);
-						cout << "학번    이름     국어   수학   영어   과학   JSP   JAVA   C++  Python  DS" << endl;
-						gotoxy(23, k + 4);
-						cout << mg.student_num << setw(10) << student_name <<
-							setw(5) << score1 << setw(7) << score2 << setw(7) << score3 << setw(7) << score4 << setw(7)
-							<< score5 << setw(6) << score6 << setw(7) << score7 << setw(6) << score8 << setw(7) << score9 << '\n';
-						break;
-					}
-				}
-				second_grade.close();
-
-				// 무슨과목 바꿀 건지 물어보기
-				gotoxy(40, k + 7);
-				cout << "성적을 수정할 과목을 입력하세요 : ";
-				cin >> subject;
-				gotoxy(40, k + 9);
-				cout << "수정된 성적을 입력하세요 : ";
-				cin >> new_score;
-				if (subject == "국어") {
-					mg.score1 = new_score;
-				}
-				else if (subject == "수학") {
-					mg.score2 = new_score;
-				}
-				else if (subject == "영어") {
-					mg.score3 = new_score;
-				}
-				else if (subject == "과학") {
-					mg.score4 = new_score;
-				}
-				else if (subject == "JSP") {
-					mg.score5 = new_score;
-				}
-				else if (subject == "JAVA") {
-					mg.score6 = new_score;
-				}
-				else if (subject == "C++") {
-					mg.score7 = new_score;
-				}
-				else if (subject == "Python") {
-					mg.score8 = new_score;
-				}
-				else if (subject == "DS") {
-					mg.score9 = new_score;
-				}
-				else {
-					subject = "";
-					new_score = "";
-					gotoxy(40, k + 7);
-					cout << "성적을 수정할 과목을 입력하세요 : ";
-					cin >> subject;
-					gotoxy(40, k + 9);
-					cout << "수정된 성적을 입력하세요 : ";
-					cin >> new_score;
-				}
-
-				// 이전 점수 삭제
-				FILE* fd, * fd1;
-				char name[80];
-				char line[80];
-				string name2;
-				char temp[2048];
-
-				fd = fopen("second_grade.txt", "rb");
-				const char* c = hakbun2.c_str();
-				strcpy(name, c);
-				fflush(stdin);
-
-				temp[0] = 0;
-				while (!feof(fd)) {
-					memset(&line[0], 0, sizeof(0));
-					fgets(line, 80, fd);
-					if (strstr(line, name) == NULL) {
-						strcat(temp, line);
-					}
-				}
-				fclose(fd);
-
-				fd = fopen("second_grade.txt", "wb");
-				fprintf(fd, "%s", temp);
-				fclose(fd);
-
-				// 수정된 성적 입력
-				ofstream fout("second_grade.txt", ios::app);
-				fout << mg.student_num << setw(10) << mg.student_name << setw(7) << mg.score1 << setw(7) << mg.score2 << setw(7)
-					<< mg.score3 << setw(7) << mg.score4 << setw(7) << mg.score7 << setw(7) << mg.score6 << setw(7) << mg.score7
-					<< setw(7) << mg.score8 << setw(7) << endl;
-			}
-		}
-
-		gotoxy(45, 23);
-		cout << "성적이 수정되었습니다" << endl;
-
-		gotoxy(23, 26);
-		int select = -1;
-		cout << "(0 입력 : 메인화면, 1 입력 : 교사메뉴, 2 입력 : 성적 수정하기) : ";
-		cin >> select;
-		while (true) {
-			switch (select) {
-				//case 1:ShowGrade(); break;
-			case 0: MainPage(); break;
-			case 1: TeacherPage(); break;
-			case 2: modifyGrade(); break;
-			default:
-				gotoxy(47, 27);
-				printf("존재하지 않는 메뉴입니다");
-				gotoxy(15, 26);
-				printf("(0 입력 : 메인화면, 1 입력 : 교사메뉴, 2 입력 : 성적 수정하기) : ");
-				scanf_s("%d", &select);
-			}
-		}
-	}
-	else {
-		system("cls");
-		int i;
-		int x = 9;
-		int y = 4;
-
-		gotoxy(x, y);
-		printf("┌");
-		for (i = 0; i < 98; i++) {
-			printf("─");
-		}
-		printf("┐");
-
-		for (i = 0; i < 30; i++) {
-			y++;
-			gotoxy(x, y);
-			printf("│");
-
-			x += 99;
-			gotoxy(x, y);
-			printf("│");
-			x = 9;
-		}
-		gotoxy(x, y);
-		printf("└");
-		for (i = 0; i < 98; i++) {
-			printf("─");
-		}
-		printf("┘\n\n\n");
-
-		for (int k = 0; k < 30; k++) {
-			if (k == 11) {
-				gotoxy(40, k);
-				ifstream third_grade("third_grade.txt");
-				cout << "자신의 학번을 입력하세요 : ";
-				cin >> hakbun;
-				hakbun2 = to_string(hakbun);
-
-				string student_name;
-				string student_num;
-				string score1; string score2; string score3; string score4; string score5;
-				string score6; string score7; string score8;
-
-				ModifyGrade mg("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0");
-
-				while (third_grade >> student_num >> student_name >> score1 >> score2 >> score3 >> score4 >> score5 >> score6 >> score7 >> score8) {
-					mg.student_num = student_num;
-					mg.student_name = student_name;
-					mg.score1 = score1;
-					mg.score2 = score2;
-					mg.score3 = score3;
-					mg.score4 = score4;
-					mg.score5 = score5;
-					mg.score6 = score6;
-					mg.score7 = score7;
-					mg.score8 = score8;
-					if (mg.student_num == hakbun2) {
-						gotoxy(17, k + 3);
-						cout << "학번     이름     선택1   선택2   선택3   영어   사무관리   DB   server   Programming" << endl;
-						gotoxy(17, k + 4);
-						cout << mg.student_num << setw(10) << student_name <<
-							setw(6) << score1 << setw(8) << score2 << setw(8) << score3 << setw(8) << score4 << setw(9)
-							<< score5 << setw(9) << score6 << setw(7) << score7 << setw(11) << score8 << '\n';
-						break;
-					}
-				}
-				third_grade.close();
-
-				// 무슨과목 바꿀 건지 물어보기
-				gotoxy(40, k + 7);
-				cout << "성적을 수정할 과목을 입력하세요 : ";
-				cin >> subject;
-				gotoxy(40, k + 9);
-				cout << "수정된 성적을 입력하세요 : ";
-				cin >> new_score;
-				if (subject == "국어") {
-					mg.score1 = new_score;
-				}
-				else if (subject == "수학") {
-					mg.score2 = new_score;
-				}
-				else if (subject == "영어") {
-					mg.score3 = new_score;
-				}
-				else if (subject == "과학") {
-					mg.score4 = new_score;
-				}
-				else if (subject == "JSP") {
-					mg.score5 = new_score;
-				}
-				else if (subject == "JAVA") {
-					mg.score6 = new_score;
-				}
-				else if (subject == "C++") {
-					mg.score7 = new_score;
-				}
-				else if (subject == "Python") {
-					mg.score8 = new_score;
-				}
-				else if (subject == "DS") {
-					mg.score9 = new_score;
-				}
-				else {
-					subject = "";
-					new_score = "";
-					gotoxy(40, k + 7);
-					cout << "성적을 수정할 과목을 입력하세요 : ";
-					cin >> subject;
-					gotoxy(40, k + 9);
-					cout << "수정된 성적을 입력하세요 : ";
-					cin >> new_score;
-				}
-
-				// 이전 점수 삭제
-				FILE* fd, * fd1;
-				char name[80];
-				char line[80];
-				string name2;
-				char temp[2048];
-
-				fd = fopen("third_grade.txt", "rb");
-				const char* c = hakbun2.c_str();
-				strcpy(name, c);
-				fflush(stdin);
-
-				temp[0] = 0;
-				while (!feof(fd)) {
-					memset(&line[0], 0, sizeof(0));
-					fgets(line, 80, fd);
-					if (strstr(line, name) == NULL) {
-						strcat(temp, line);
-					}
-				}
-				fclose(fd);
-
-				fd = fopen("third_grade.txt", "wb");
-				fprintf(fd, "%s", temp);
-				fclose(fd);
-
-				// 수정된 성적 입력
-				ofstream fout("third_grade.txt", ios::app);
-				fout << mg.student_num << setw(10) << mg.student_name << setw(7) << mg.score1 << setw(7) << mg.score2 << setw(7)
-					<< mg.score3 << setw(7) << mg.score4 << setw(7) << mg.score7 << setw(7) << mg.score6 << setw(7) << mg.score7
-					<< setw(7) << mg.score8 << setw(7) << endl;
-			}
-		}
-
-		gotoxy(45, 23);
-		cout << "성적이 수정되었습니다" << endl;
-
-		gotoxy(23, 26);
-		int select = -1;
-		cout << "(0 입력 : 메인화면, 1 입력 : 교사메뉴, 2 입력 : 성적 수정하기) : ";
-		cin >> select;
-		while (true) {
-			switch (select) {
-				//case 1:ShowGrade(); break;
-			case 0: MainPage(); break;
-			case 1: TeacherPage(); break;
-			case 2: modifyGrade(); break;
-			default:
-				gotoxy(47, 27);
-				printf("존재하지 않는 메뉴입니다");
-				gotoxy(15, 26);
-				printf("(0 입력 : 메인화면, 1 입력 : 교사메뉴, 2 입력 : 성적 수정하기) : ");
-				scanf_s("%d", &select);
-			}
-		}
-	}
+	//if (0 == fopen_s(&p_file, "first_grade.txt", "r+t")) {
+	//	while (fgets(temp, 256, p_file) != NULL) {
+	//		p = strstr(temp, "박지윤");
+	//		if (p != NULL) {
+	//			find_pos = strlen(temp) - (p - temp) + 1;
+	//			fseek(p_file, (-1) * find_pos, SEEK_CUR);
+	//			fwrite("일지윤", 4, 1, p_file);
+	//			fseek(p_file, find_pos - 4, SEEK_CUR);
+	//		}
+	//	}
+	//	fclose(p_file);
+	//	//fout.seekp(-1, ios::end);
+	//}
 }
 
 // 학생 => 성적 보기
@@ -1604,6 +1182,7 @@ void StudentPage() {
 			scanf_s("%d", &studentMenuSelect);
 		}
 	}
+
 }
 
 // 교사 메인 페이지 함수
@@ -1748,7 +1327,7 @@ void MainPage() {
 		StudentPage();
 	}
 	else if (menuSelect == 2) {
-		IsTeacher();
+		TeacherPage();
 	}
 	else if (typeid(menuSelect).name() == "int") {
 		gotoxy(47, 18);
@@ -1759,7 +1338,39 @@ void MainPage() {
 		printf("숫자를 입력해주세요");
 	}
 }
-
+//void WriteGrade() {
+//	int flag = ChoiceGrade();
+//	if (flag == 1) {
+//		First_Grade g;
+//		g.create_student();
+//		ofstream fout("first_grade.txt", std::ios::app);
+//		fout << g.name << setw(7) << g.student_num << setw(7) <<
+//			g.first_scores[0] << setw(7) << g.first_scores[1] << setw(7) << g.first_scores[2] << setw(7) <<
+//			g.first_scores[3] << setw(7) << g.first_scores[7] << setw(7) << g.first_scores[5] << setw(7) <<
+//			g.first_scores[6] << setw(7) << g.first_scores[7] << endl;
+//		fout.close();
+//	}
+//	else if (flag == 2) {
+//		Second_Grade g;
+//		g.create_student();
+//		ofstream fout("second_grade.txt", std::ios::app);
+//		fout << g.name << setw(7) << g.student_num << setw(7) <<
+//			g.second_scores[0] << setw(10) << g.second_scores[1] << setw(10) << g.second_scores[2] << setw(7) <<
+//			g.second_scores[3] << setw(7) << g.second_scores[4] << setw(7) << g.second_scores[5] << setw(7) <<
+//			g.second_scores[6] << setw(7) << g.second_scores[7] << setw(7) << g.second_scores[8] << setw(7) << g.second_scores[9] << setw(5) << endl;
+//		fout.close();
+//	}
+//	else {
+//		Third_Grade g;
+//		g.create_student();
+//		ofstream fout("third_grade.txt", std::ios::app);
+//		fout << g.name << setw(7) << g.student_num << setw(7) <<
+//			g.third_scores[0] << setw(10) << g.third_scores[1] << setw(10) << g.third_scores[2] << setw(7) <<
+//			g.third_scores[3] << setw(7) << g.third_scores[4] << setw(7) << g.third_scores[5] << setw(7) <<
+//			g.third_scores[6] << setw(7) << g.third_scores[7] << setw(7) << g.third_scores[8] << setw(7) << endl;
+//		fout.close();
+//	}
+//}
 int ChoiceGrade() {
 	system("cls");
 
@@ -1826,6 +1437,207 @@ int ChoiceGrade() {
 		// 1, 2, 3 학년 이 아닌 다른 것을 선택했을 때 처리
 	}
 }
+//void ShowAllGrades() {
+//	int flag = ChoiceGrade();
+//	if (flag == 1) {
+//		system("cls");
+//
+//		int i;
+//		int x = 9;
+//		int y = 4;
+//
+//		int gradeSelect = 0;
+//
+//		gotoxy(x, y);
+//		printf("┌");
+//		for (i = 0; i < 98; i++) {
+//			printf("─");
+//		}
+//		printf("┐");
+//
+//		for (i = 0; i < 30; i++) {
+//			y++;
+//			gotoxy(x, y);
+//			printf("│");
+//
+//			if (i == 5) {
+//				int j = 5;
+//				gotoxy(25, i);
+//				char inputString[1000];
+//
+//				First_Grade fg;
+//				ifstream fin;
+//				fin.open("first_grade.txt");
+//				while (!fin.eof()) {
+//					j++;
+//					fin.getline(inputString, 100);
+//					gotoxy(25, j);
+//					cout << inputString << endl;
+//				}
+//				fin.close();
+//			}
+//
+//			x += 99;
+//			gotoxy(x, y);
+//			printf("│");
+//			x = 9;
+//		}
+//		gotoxy(x, y);
+//		printf("└");
+//		for (i = 0; i < 98; i++) {
+//			printf("─");
+//		}
+//		printf("┘\n\n\n");
+//	}
+//	else if (flag == 2) {
+//		system("cls");
+//
+//		int i;
+//		int x = 9;
+//		int y = 4;
+//
+//		int gradeSelect = 0;
+//
+//		gotoxy(x, y);
+//		printf("┌");
+//		for (i = 0; i < 98; i++) {
+//			printf("─");
+//		}
+//		printf("┐");
+//
+//		for (i = 0; i < 30; i++) {
+//			y++;
+//			gotoxy(x, y);
+//			printf("│");
+//
+//			if (i == 5) {
+//				int j = 5;
+//				gotoxy(25, i);
+//				char inputString[1000];
+//
+//				First_Grade fg;
+//				ifstream fin;
+//				fin.open("second_grade.txt");
+//				while (!fin.eof()) {
+//					j++;
+//					fin.getline(inputString, 100);
+//					gotoxy(25, j);
+//					cout << inputString << endl;
+//				}
+//				fin.close();
+//			}
+//
+//			x += 99;
+//			gotoxy(x, y);
+//			printf("│");
+//			x = 9;
+//		}
+//		gotoxy(x, y);
+//		printf("└");
+//		for (i = 0; i < 98; i++) {
+//			printf("─");
+//		}
+//		printf("┘\n\n\n");
+//	}
+//	else {
+//		system("cls");
+//
+//		int i;
+//		int x = 9;
+//		int y = 4;
+//
+//		int gradeSelect = 0;
+//
+//		gotoxy(x, y);
+//		printf("┌");
+//		for (i = 0; i < 98; i++) {
+//			printf("─");
+//		}
+//		printf("┐");
+//
+//		for (i = 0; i < 30; i++) {
+//			y++;
+//			gotoxy(x, y);
+//			printf("│");
+//
+//			if (i == 5) {
+//				int j = 5;
+//				gotoxy(25, i);
+//				char inputString[1000];
+//
+//				First_Grade fg;
+//				ifstream fin;
+//				fin.open("third_grade.txt");
+//				while (!fin.eof()) {
+//					j++;
+//					fin.getline(inputString, 100);
+//					gotoxy(25, j);
+//					cout << inputString << endl;
+//				}
+//				fin.close();
+//			}
+//
+//			x += 99;
+//			gotoxy(x, y);
+//			printf("│");
+//			x = 9;
+//		}
+//		gotoxy(x, y);
+//		printf("└");
+//		for (i = 0; i < 98; i++) {
+//			printf("─");
+//		}
+//		printf("┘\n\n\n");
+//	}
+//}
+//void ShowGrade() {
+//	int flag = ChoiceGrade();
+//	int studnet_num;
+//
+//	if (flag == 1) {
+//		system("cls");
+//
+//		int i;
+//		int x = 9;
+//		int y = 4;
+//
+//		int gradeSelect = 0;
+//
+//		gotoxy(x, y);
+//		printf("┌");
+//		for (i = 0; i < 98; i++) {
+//			printf("─");
+//		}
+//		printf("┐");
+//
+//		for (i = 0; i < 30; i++) {
+//			y++;
+//			gotoxy(x, y);
+//			printf("│");
+//
+//			x += 99;
+//			gotoxy(x, y);
+//			printf("│");
+//			x = 9;
+//		}
+//		gotoxy(x, y);
+//		printf("└");
+//		for (i = 0; i < 98; i++) {
+//			printf("─");
+//		}
+//		printf("┘\n\n\n");
+//		gotoxy(45, 17);
+//		cout << "학번을 입력하세요 : ";
+//		cin >> studnet_num;
+//		// 파일에서 해당 학번에 대한 성적읽기=======================================================================
+//	}
+//	else if (flag == 2) {
+//
+//	}
+//	else {
+//
+//	}
+//}
 
 // 교사 -> 의의신청 목록 보기
 void ShowObjections() {
@@ -1873,6 +1685,13 @@ void ShowObjections() {
 			gotoxy(25, count);
 			cout << inputString << endl;
 		}
+		//while (fin >> student_num >> subject >> reason) {
+		//	gotoxy(15, count);
+		//	/*printf("%8d%10s", student_num, subject);
+		//	cout << reason << endl;*/
+		//	cout << student_num << setw(20) << subject << setw(30) << reason << endl;
+		//	count++;
+		//}
 		fin.close();
 	}
 	else if (flag == 2) {
@@ -1928,6 +1747,27 @@ void ShowGrades() {
 			gotoxy(20, count);
 			cout << inputString << endl;
 		}
+		//while (fin >> student_num >> student_name >> scores[0] >> scores[1] >> scores[2] >> scores[3] >> scores[4] >> scores[5] >> scores[6] >> scores[7] >> scores[8] >> scores[9]) {
+		//	gotoxy(15, count);
+		//	/*printf("%8d%10s", student_num, subject);
+		//	cout << reason << endl;*/
+		//	cout << student_num << setw(20) << student_name << setw(30) << scores[0]  << setw(10) <<  scores[1] << setw(10) << scores[2] << setw(10) << scores[3] << setw(10) << scores[4] << setw(10) << scores[5] << setw(10) << scores[6] << setw(10) << scores[7] << setw(10) << scores[8] << setw(10) << scores[9] << endl;
+		//	count++;
+		//}
+		//while (fin >> student_num >> student_name >> scores[0] >> scores[1] >> scores[2] >> scores[3] >> scores[4] >> scores[5] >> scores[6] >> scores[7] >> scores[8] >> scores[9]) {
+		//	gotoxy(15, count);
+		//	/*printf("%8d%10s", student_num, subject);
+		//	cout << reason << endl;*/
+		//	cout << student_num << setw(20) << student_name << setw(30) << scores[0]  << setw(10) <<  scores[1] << setw(10) << scores[2] << setw(10) << scores[3] << setw(10) << scores[4] << setw(10) << scores[5] << setw(10) << scores[6] << setw(10) << scores[7] << setw(10) << scores[8] << setw(10) << scores[9] << endl;
+		//	count++;
+		//}
+		//while (fin >> student_num >> student_name >> scores[0] >> scores[1] >> scores[2] >> scores[3] >> scores[4] >> scores[5] >> scores[6] >> scores[7] >> scores[8] >> scores[9]) {
+		//	gotoxy(15, count);
+		//	/*printf("%8d%10s", student_num, subject);
+		//	cout << reason << endl;*/
+		//	cout << student_num << setw(20) << student_name << setw(30) << scores[0]  << setw(10) <<  scores[1] << setw(10) << scores[2] << setw(10) << scores[3] << setw(10) << scores[4] << setw(10) << scores[5] << setw(10) << scores[6] << setw(10) << scores[7] << setw(10) << scores[8] << setw(10) << scores[9] << endl;
+		//	count++;
+		//}
 		fin.close();
 	}
 	else if (flag == 2) {
