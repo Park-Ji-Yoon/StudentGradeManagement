@@ -21,19 +21,15 @@ void ShowObjections(); // 의의신청 보는 화면
 void ObjectionSuccess(); // 의의신청 완료 화면
 
 void IsTeacher(); // 교사 비밀번호 입력 화면
-
 void modifyGrade(); // 학생 성적 수정
-
 string searchGrade(int isStudent); // 학생 성적 검색해주는 함수
-
 void showGrade(); // 학생 메뉴 => 학생 성적 보여주는 함수
-
 void showGradeT(); // 교사 메뉴 => 학생 성적 보여주는 함수
 
-void changeTeacherPW(); // 선생님 비밀번호 바꿔주는 함수 - 할 지 안 할지 고민 후 결정하기===================================================================================
+void changePw();
 
 // 교사 비밀번호
-const string TEACHER_PASSWORD = "teacher";
+string TEACHER_PASSWORD = "teacher";
 
 // gotoxy 함수 (콘솔창 내에서 위치 지정 해줌)
 void gotoxy(int x, int y) {
@@ -432,6 +428,7 @@ Grade Grade::writeGrade(int flag) {
 	}
 }
 
+// ModifyGrade클래스
 class ModifyGrade : public Grade {
 public:
 	string student_num;
@@ -976,6 +973,88 @@ void modifyGrade() {
 	}
 }
 
+void changePw() {
+	int i, j;
+	int x = 9;
+	int y = 4;
+
+	string old_pw;
+	string new_pw;
+	string new_pw_identify;
+	boolean collect = false;
+	int select;
+
+	system("cls");
+	gotoxy(x, y);
+	printf("┌");
+	for (i = 0; i < 98; i++) {
+		printf("─");
+	}
+	printf("┐");
+	for (i = 0; i < 30; i++) {
+		y++;
+		gotoxy(x, y);
+		printf("│");
+		x += 99;
+		gotoxy(x, y);
+		printf("│");
+		x = 9;
+	}
+	gotoxy(x, y);
+	printf("└");
+	for (i = 0; i < 98; i++) {
+		printf("─");
+	}
+	printf("┘\n\n\n");
+	for (i = 0; i < 30; i++) {
+		if (i == 14) {
+			gotoxy(45, i);
+			cout << "현재 비밀번호 입력 : ";
+			cin >> old_pw;
+			if (old_pw != TEACHER_PASSWORD) {
+				gotoxy(45, i + 2);
+				cout << "현재 비밀번호 입력 : ";
+				cin >> old_pw;
+			}
+			else {
+				collect = true;
+			}
+		}
+		if (i == 16 && collect == true) {
+			gotoxy(45, i);
+			cout << "새 비밀번호 입력 : ";
+			cin >> new_pw;
+			if (new_pw.length() < 6) {
+				gotoxy(45, i + 2);
+				cout << "비밀번호는 최소 6글자 이상이어야 합니다";
+				gotoxy(45, i);
+				cout << "새 비밀번호 입력 : ";
+				cin >> new_pw;
+			}
+			if(new_pw.length() >= 6) {
+				gotoxy(45, i + 2);
+				cout << "새 비밀번호 확인 : ";
+				cin >> new_pw_identify;
+				if (new_pw == new_pw_identify) {
+					TEACHER_PASSWORD = new_pw;
+					gotoxy(45, i + 5);
+					cout << "(0 : 메인화면, 1 : 교사화면) : ";
+					cin >> select;
+					if (select == 0) {
+						MainPage();
+					}
+					else if (select == 1) {
+						TeacherPage();
+					}
+					else {
+
+					}
+				}
+			}
+		}
+	}
+}
+
 // 학생 => 성적 보기
 string searchGrade(int isStudent) {
 	int flag = ChoiceGrade();
@@ -1101,6 +1180,7 @@ string searchGrade(int isStudent) {
 	}
 }
 
+// 학생 -> 성적 보기
 void showGrade() {
 	string line = searchGrade(1);
 
@@ -1169,6 +1249,7 @@ void showGrade() {
 	}
 }
 
+// 교사 -> 학생 검색하기
 void showGradeT() {
 	string line = searchGrade(0);
 
@@ -1277,7 +1358,7 @@ void GradeSuccess() {
 				gotoxy(45, j);
 				cout << "성적입력이 완료되었습니다!!" << endl;
 				gotoxy(30, 17);
-				cout << "(0 입력 : 메인화면, 1 입력 : 학생메뉴, 2 입력 : 의의신청하기) : ";
+				cout << "(0 입력 : 메인화면, 1 입력 : 교사메뉴, 2 입력 : 성적 입력하기) : ";
 				cin >> studentMenuSelect;
 				if (studentMenuSelect == 0) {
 					success == false;
@@ -1285,7 +1366,7 @@ void GradeSuccess() {
 				}
 				else if (studentMenuSelect == 1) {
 					success == false;
-					StudentPage();
+					TeacherPage();
 				}
 				else if (studentMenuSelect == 2) {
 					success = false;
@@ -1303,7 +1384,7 @@ void GradeSuccess() {
 	}
 } // end of GradeSuccess
 
-// 의의신청 클래스
+// Objection클래스 (의의신청 클래스)
 class Objection {
 public:
 	int student_num;
@@ -1323,19 +1404,19 @@ boolean Objection::makeObjection() {
 	if (flag == 1) {
 		Objection ob = writeObjection();
 		ofstream fout("first_grade_objection.txt", ios::app);
-		fout << ob.student_num << setw(20) << ob.subject << setw(30) << ob.reason << endl;
+		fout << ob.student_num << setw(20) << ob.subject << setw(50) << ob.reason << endl;
 		ObjectionSuccess();
 	}
 	else if (flag == 1) {
 		Objection ob = writeObjection();
 		ofstream fout("second_grade_objection.txt", ios::app);
-		fout << ob.student_num << setw(20) << ob.subject << setw(30) << ob.reason << endl;
+		fout << ob.student_num << setw(20) << ob.subject << setw(50) << ob.reason << endl;
 		ObjectionSuccess();
 	}
 	else {
 		Objection ob = writeObjection();
 		ofstream fout("third_grade_objection.txt", ios::app);
-		fout << ob.student_num << setw(20) << ob.subject << setw(30) << ob.reason << endl;
+		fout << ob.student_num << setw(20) << ob.subject << setw(50) << ob.reason << endl;
 		ObjectionSuccess();
 	}
 	return false;
@@ -1496,6 +1577,10 @@ void IsTeacher() {
 	printf("┘\n\n\n");
 
 	for (int k = 0; k < 30; k++) {
+		if (k == 12) {
+			gotoxy(50, k);
+			cout << "교사 보안 확인" << endl;
+		}
 		if (k == 17) {
 			while (teacherPw != TEACHER_PASSWORD) {
 				gotoxy(47, k + 5);
@@ -1627,33 +1712,36 @@ void TeacherPage() {
 		gotoxy(x, y);
 		printf("│");
 
-		if (i == 10) {
+		if (i == 8) {
 			gotoxy(54, i);
 			printf("교사메뉴");
 		}
-		if (i == 14) {
+		if (i == 12) {
 			gotoxy(46, i);
 			printf("01. 전체 학생 성적 보기");
 		}
-		if (i == 16) {
+		if (i == 14) {
 			gotoxy(46, i);
 			printf("02. 학생 검색하기");
 		}
-		if (i == 18) {
+		if (i == 16) {
 			gotoxy(46, i);
 			printf("03. 학생 성적 입력하기");
 		}
-		if (i == 20) {
+		if (i == 18) {
 			gotoxy(46, i);
 			printf("04. 학생 성적 수정하기");
 		}
-		if (i == 22) {
+		if (i == 20) {
 			gotoxy(46, i);
 			printf("05. 의의신청 목록 보기");
 		}
-		if (i == 24) {
+		if (i == 22) {
 			gotoxy(46, i);
-			printf("06. 뒤로가기");
+			printf("06. 비밀번호 변경");
+		}if (i == 24) {
+			gotoxy(46, i);
+			printf("07. 뒤로가기");
 		}
 
 		x += 99;
@@ -1684,7 +1772,8 @@ void TeacherPage() {
 	}
 	case 4:modifyGrade();  break;
 	case 5: ShowObjections();  break;
-	case 6: MainPage(); break;
+	case 6: changePw(); break;
+	case 7: MainPage(); break;
 	default:
 		gotoxy(47, 29);
 		printf("존재하지 않는 메뉴입니다");
@@ -1760,6 +1849,7 @@ void MainPage() {
 	}
 }
 
+// 학년을 선택하는 함수
 int ChoiceGrade() {
 	system("cls");
 
@@ -1876,10 +1966,109 @@ void ShowObjections() {
 		fin.close();
 	}
 	else if (flag == 2) {
+		system("cls");
+		int i;
+		int x = 9;
+		int y = 4;
 
+		gotoxy(x, y);
+		printf("┌");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┐");
+		for (i = 0; i < 30; i++) {
+			y++;
+			gotoxy(x, y);
+			printf("│");
+			x += 99;
+			gotoxy(x, y);
+			printf("│");
+			x = 9;
+		}
+		gotoxy(x, y);
+		printf("└");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┘\n\n\n");
+
+		int count = 5;
+		ifstream fin;
+		fin.open("second_grade_objection.txt");
+
+		char inputString[1000];
+		while (!fin.eof()) {
+			count++;
+			fin.getline(inputString, 100);
+			gotoxy(25, count);
+			cout << inputString << endl;
+		}
+		fin.close();
 	}
 	else {
+		system("cls");
+		int i;
+		int x = 9;
+		int y = 4;
 
+		gotoxy(x, y);
+		printf("┌");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┐");
+		for (i = 0; i < 30; i++) {
+			y++;
+			gotoxy(x, y);
+			printf("│");
+			x += 99;
+			gotoxy(x, y);
+			printf("│");
+			x = 9;
+		}
+		gotoxy(x, y);
+		printf("└");
+		for (i = 0; i < 98; i++) {
+			printf("─");
+		}
+		printf("┘\n\n\n");
+
+		int count = 5;
+		ifstream fin;
+		fin.open("third_grade_objection.txt");
+
+		char inputString[1000];
+		while (!fin.eof()) {
+			count++;
+			fin.getline(inputString, 100);
+			gotoxy(25, count);
+			cout << inputString << endl;
+		}
+		fin.close();
+	}
+	int select;
+	for (int k = 0; k < 30; k++) {
+		if (k == 27) {
+			gotoxy(21, k);
+			cout << "(0 입력 : 메인화면, 1 입력 : 교사메뉴, 2 입력 : 의의신청 목록보기) : ";
+			cin >> select;
+			if (select == 0) {
+				select == false;
+				MainPage();
+			}
+			else if (select == 1) {
+				select == false;
+				TeacherPage();
+			}
+			else if (select == 2) {
+				ShowObjections();
+			}
+			else {
+				gotoxy(45, k + 2);
+				cout << "0이나 1을 입력해주세요" << endl;
+			}
+		}
 	}
 } // end of ShowObjections
 
@@ -2011,6 +2200,29 @@ void ShowGrades() {
 			cout << inputString << endl;
 		}
 		fin.close();
+	}
+	int select;
+	for (int k = 0; k < 30; k++) {
+		if (k == 27) {
+			gotoxy(20, k);
+			cout << "(0 입력 : 메인화면, 1 입력 : 교사메뉴, 2 입력 : 전체 성적 보기) : ";
+			cin >> select;
+			if (select == 0) {
+				select == false;
+				MainPage();
+			}
+			else if (select == 1) {
+				select == false;
+				TeacherPage();
+			}
+			else if (select == 2) {
+				ShowGrades();
+			}
+			else {
+				gotoxy(45, k + 2);
+				cout << "0이나 1을 입력해주세요" << endl;
+			}
+		}
 	}
 } // end of ShowGrades
 
